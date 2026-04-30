@@ -66,12 +66,11 @@
       text-align: center;
     }
 
-    .header__logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
-    }
+    .header__logo-image {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+}
 
     .header__logo-icon {
       width: 2.5rem;
@@ -382,13 +381,10 @@
   <!-- Header -->
   <header class="header">
     <div class="container">
-      <div class="header__logo">
-        <svg class="header__logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="40" height="40" rx="8" fill="#2563eb"/>
-          <path d="M16 12L28 20L16 28V12Z" fill="white"/>
-        </svg>
-        <span class="header__title">Live Stream</span>
-      </div>
+     <div class="header__logo">
+  <img src="https://lweurope.org/loveworld_europe_icon.svg" alt="Logo" class="header__logo-image">
+  <span class="header__title">Live Stream</span>
+</div>
       <div class="live-badge">
         <span class="live-badge__dot"></span>
         Live Now
