@@ -394,64 +394,65 @@
       <!-- Video Player Card -->
       <article class="video-card">
         <div class="video-wrapper">
-          <video
-  id="live-player"
-  class="video-js vjs-fluid vjs-big-play-centered"
-  autoplay
-  muted
-  defaultMuted
-  controls
-  preload="auto"
-  playsinline
-  webkit-playsinline
-  poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect fill='%231a1a2e' width='1920' height='1080'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='system-ui, sans-serif' font-size='48' opacity='0.5'%3ELoading stream...%3C/text%3E%3C/svg%3E"
->
-                        <p class="vjs-no-js">
-              To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.
-            </p>
-          </video>
+          <!-- Plyr CSS -->
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 
-          <!-- Custom Play Overlay (shown if autoplay fails) -->
-          <div id="play-overlay" class="play-overlay hidden" role="button" tabindex="0" aria-label="Tap to play video">
-            <div class="play-overlay__button">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
-            </div>
-            <span class="play-overlay__text">Tap to play</span>
-          </div>
+<!-- Video -->
+<div class="video-wrapper">
+  <video
+    id="player"
+    autoplay
+    muted
+    playsinline
+    controls
+  ></video>
+</div>
 
-          <!-- Error State (hidden by default) -->
-          <div id="video-error" class="video-error hidden">
-            <svg class="video-error__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12" y2="12"/>
-              <line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
-            <h3 class="video-error__title">Stream Unavailable</h3>
-            <p class="video-error__message">We're experiencing technical difficulties. Please try again shortly.</p>
-          </div>
-        </div>
-      </article>
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 
-      <!-- Status Section -->
-      
-    </div>
-  </main>
+<script>
+(function() {
+  const video = document.getElementById('player');
+  const source = 'https://cdn3.wowza.com/5/L1Uzd2FrbVlLRG1W/live/smil:lwukweb.smil/playlist.m3u8';
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <p class="footer__text">
-        Need assistance? Contact us on 02075115830
-      </p>
-    </div>
-  </footer>
+  // Force autoplay compatibility
+  video.muted = true;
+  video.autoplay = true;
+  video.playsInline = true;
 
-  <!-- Video.js Library -->
-  <script src="https://vjs.zencdn.net/8.23.4/video.min.js"></script>
+  // HLS.js for most browsers
+  if (Hls.isSupported()) {
+    const hls = new Hls({
+      enableWorker: true,
+      lowLatencyMode: false
+    });
 
-  <script>
+    hls.loadSource(source);
+    hls.attachMedia(video);
+
+    hls.on(Hls.Events.MANIFEST_PARSED, function () {
+      video.play().catch(() => {});
+    });
+
+  } 
+  // Safari / iOS native HLS
+  else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = source;
+
+    video.addEventListener('loadedmetadata', function () {
+      video.play().catch(() => {});
+    });
+  }
+
+  // Init Plyr UI
+  const player = new Plyr(video, {
+    controls: ['play', 'progress', 'mute', 'volume', 'fullscreen'],
+  });
+
+})();
+</script>
 (function() {
   'use strict';
 
