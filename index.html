@@ -400,28 +400,22 @@
   <main class="main">
     <div class="container">
       <!-- Hero Section -->
-      <section class="hero">
-        <h1 class="hero__heading">Watch Our Live Broadcast</h1>
-        <p class="hero__subheading">Thank you for joining us. The stream is currently active and available for viewing.</p>
-      </section>
-
       <!-- Video Player Card -->
       <article class="video-card">
         <div class="video-wrapper">
           <video
-            id="live-player"
-            class="video-js vjs-fluid vjs-big-play-centered"
-            controls
-            preload="auto"
-            playsinline
-            webkit-playsinline
-            poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect fill='%231a1a2e' width='1920' height='1080'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='system-ui, sans-serif' font-size='48' opacity='0.5'%3ELoading stream...%3C/text%3E%3C/svg%3E"
-          >
-            <source
-              src="https://cdn3.wowza.com/5/L1Uzd2FrbVlLRG1W/live/smil:lwukweb.smil/playlist.m3u8"
-              type="application/x-mpegURL"
-            >
-            <p class="vjs-no-js">
+  id="live-player"
+  class="video-js vjs-fluid vjs-big-play-centered"
+  autoplay
+  muted
+  defaultMuted
+  controls
+  preload="auto"
+  playsinline
+  webkit-playsinline
+  poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect fill='%231a1a2e' width='1920' height='1080'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='system-ui, sans-serif' font-size='48' opacity='0.5'%3ELoading stream...%3C/text%3E%3C/svg%3E"
+>
+                        <p class="vjs-no-js">
               To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.
             </p>
           </video>
@@ -449,6 +443,8 @@
         </div>
       </article>
 
+      <!-- Status Section -->
+      
     </div>
   </main>
 
@@ -465,145 +461,106 @@
   <script src="https://vjs.zencdn.net/8.23.4/video.min.js"></script>
 
   <script>
-    (function() {
-      'use strict';
+(function() {
+  'use strict';
 
-      const videoElement = document.getElementById('live-player');
-      const playOverlay = document.getElementById('play-overlay');
-      const errorOverlay = document.getElementById('video-error');
+  const videoElement = document.getElementById('live-player');
+  const playOverlay = document.getElementById('play-overlay');
+  const errorOverlay = document.getElementById('video-error');
 
-      // Initialize Video.js player
-      const player = videojs(videoElement, {
-        html5: {
-          vhs: {
-            overrideNative: !videojs.browser.IS_SAFARI,
-            enableLowInitialPlaylist: true,
-            smoothQualityChange: true,
-            handleManifestRedirects: true
-          },
-          nativeAudioTracks: videojs.browser.IS_SAFARI,
-          nativeVideoTracks: videojs.browser.IS_SAFARI
-        },
-        liveui: true,
-        responsive: true,
-        fill: true,
-        playsinline: true,
-        errorDisplay: false
-      });
+  videoElement.muted = true;
+  videoElement.defaultMuted = true;
+  videoElement.autoplay = true;
+  videoElement.playsInline = true;
 
-      // Attempt autoplay with muted audio
-      function attemptAutoplay() {
-        player.muted(true);
+  videoElement.setAttribute('muted', '');
+  videoElement.setAttribute('defaultMuted', '');
+  videoElement.setAttribute('autoplay', '');
+  videoElement.setAttribute('playsinline', '');
+  videoElement.setAttribute('webkit-playsinline', '');
 
-        const playPromise = player.play();
-
-        if (playPromise !== undefined) {
-          playPromise
-            .then(function() {
-              // Autoplay succeeded
-              hidePlayOverlay();
-            })
-            .catch(function(error) {
-              // Autoplay was blocked, show overlay
-              console.log('Autoplay blocked:', error.message);
-              showPlayOverlay();
-            });
-        }
+  const player = videojs(videoElement, {
+    autoplay: 'muted',
+    muted: true,
+    liveui: true,
+    responsive: true,
+    fill: true,
+    playsinline: true,
+    errorDisplay: false,
+    html5: {
+      vhs: {
+        overrideNative: !videojs.browser.IS_SAFARI,
+        enableLowInitialPlaylist: true,
+        smoothQualityChange: true,
+        handleManifestRedirects: true
       }
+    }
+  });
 
-      // Show play overlay
-      function showPlayOverlay() {
-        playOverlay.classList.remove('hidden');
-      }
+  function showPlayOverlay() {
+    playOverlay.classList.remove('hidden');
+  }
 
-      // Hide play overlay
-      function hidePlayOverlay() {
-        playOverlay.classList.add('hidden');
-      }
+  function hidePlayOverlay() {
+    playOverlay.classList.add('hidden');
+  }
 
-      // Show error overlay
-      function showError() {
-        errorOverlay.classList.remove('hidden');
-        hidePlayOverlay();
-      }
+  function showError() {
+    errorOverlay.classList.remove('hidden');
+    hidePlayOverlay();
+  }
 
-      // Handle overlay click
-      function handleOverlayClick() {
-        hidePlayOverlay();
-        player.muted(true);
-        player.play().catch(function(error) {
-          console.error('Play failed:', error);
+  function attemptAutoplay() {
+    player.muted(true);
+
+    const playPromise = player.play();
+
+    if (playPromise !== undefined) {
+      playPromise
+        .then(hidePlayOverlay)
+        .catch(function(error) {
+          console.log('Autoplay blocked:', error && error.message ? error.message : error);
+          showPlayOverlay();
         });
-      }
+    }
+  }
 
-      // Event Listeners
-      playOverlay.addEventListener('click', handleOverlayClick);
-      playOverlay.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          handleOverlayClick();
-        }
-      });
+  function handleOverlayClick() {
+    hidePlayOverlay();
+    player.muted(true);
+    player.play().catch(showPlayOverlay);
+  }
 
-      // Player ready event
-      player.ready(function() {
-        attemptAutoplay();
-      });
+  playOverlay.addEventListener('click', handleOverlayClick);
+  playOverlay.addEventListener('touchstart', handleOverlayClick, { passive: true });
 
-      // Handle play event - hide overlay when video starts
-      player.on('play', function() {
-        hidePlayOverlay();
-      });
+  playOverlay.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleOverlayClick();
+    }
+  });
 
-      // Handle pause - don't show overlay, just let video.js controls work
-      player.on('pause', function() {
-        // Don't show overlay on manual pause
-      });
+  player.ready(function() {
+     player.src({
+    src: 'https://cdn3.wowza.com/5/L1Uzd2FrbVlLRG1W/live/smil:lwukweb.smil/playlist.m3u8',
+    type: 'application/x-mpegURL'
+  });
+    attemptAutoplay();
+  });
 
-      // Handle errors
-      player.on('error', function() {
-        const error = player.error();
-        console.error('Video error:', error);
+  player.on('loadedmetadata', attemptAutoplay);
+  player.on('canplay', attemptAutoplay);
+  player.on('playing', function() {
+    hidePlayOverlay();
+    errorOverlay.classList.add('hidden');
+  });
 
-        // Only show error for critical issues
-        if (error && error.code) {
-          showError();
-        }
-      });
-
-      // Attempt to recover from stalls
-      let stallCount = 0;
-      player.on('waiting', function() {
-        stallCount++;
-        if (stallCount > 5) {
-          // Attempt to recover by seeking to live edge
-          if (player.liveTracker && player.liveTracker.isLive()) {
-            player.liveTracker.seekToLiveEdge();
-          }
-          stallCount = 0;
-        }
-      });
-
-      player.on('playing', function() {
-        stallCount = 0;
-        errorOverlay.classList.add('hidden');
-      });
-
-      // Handle visibility changes - pause when hidden, play when visible
-      document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-          // Page is hidden, could pause to save bandwidth
-        } else {
-          // Page is visible again, attempt to play if not playing
-          if (player.paused() && !errorOverlay.classList.contains('hidden') === false) {
-            player.play().catch(function() {
-              showPlayOverlay();
-            });
-          }
-        }
-      });
-
-    })();
-  </script>
+  player.on('error', function() {
+    console.error('Video error:', player.error());
+    showError();
+  });
+})();
+</script>
 </body>
 </html>
