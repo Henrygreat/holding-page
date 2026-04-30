@@ -1,557 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Live Video Stream - Currently Broadcasting">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Live Stream</title>
 
-  <!-- Video.js CSS -->
-  <link href="https://vjs.zencdn.net/8.23.4/video-js.min.css" rel="stylesheet">
-
-  <!-- Favicon (inline SVG data URI) -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%23e63946'/><circle cx='50' cy='50' r='20' fill='white'/></svg>">
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 
   <style>
-    :root {
-      --color-bg: #f8f9fa;
-      --color-surface: #ffffff;
-      --color-text: #1a1a2e;
-      --color-text-muted: #6c757d;
-      --color-accent: #2563eb;
-      --color-accent-hover: #1d4ed8;
-      --color-live: #e63946;
-      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-      --radius-sm: 0.5rem;
-      --radius-md: 1rem;
-      --radius-lg: 1.5rem;
-      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    }
-
-    *, *::before, *::after {
+    * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
-    html {
-      font-size: 16px;
-      -webkit-text-size-adjust: 100%;
-    }
-
     body {
-      font-family: var(--font-sans);
-      background-color: var(--color-bg);
-      color: var(--color-text);
-      line-height: 1.6;
+      background: #f8f9fa;
+      font-family: Arial, sans-serif;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
     }
 
-    /* Main Container */
+    .header {
+      text-align: center;
+      padding: 22px 0 70px;
+    }
+
+    .logo {
+      height: 56px;
+      width: auto;
+      object-fit: contain;
+    }
+
     .container {
       width: 100%;
-      max-width: 1000px;
+      max-width: 1500px;
       margin: 0 auto;
-      padding: 0 1.5rem;
+      padding: 0 24px;
     }
 
-    /* Header */
-    .header {
-      padding: 2rem 0;
-      text-align: center;
-    }
-
-    .header__logo-image {
-  height: 50px;
-  width: auto;
-  object-fit: contain;
-}
-
-    .header__logo-icon {
-      width: 2.5rem;
-      height: 2.5rem;
-    }
-
-    .header__title {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--color-text);
-      letter-spacing: -0.025em;
-    }
-
-    /* Live Badge */
-    .live-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--color-live);
-      color: white;
-      padding: 0.375rem 0.875rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .live-badge__dot {
-      width: 0.5rem;
-      height: 0.5rem;
-      background: white;
-      border-radius: 50%;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.6; transform: scale(0.9); }
-    }
-
-    /* Main Content */
-    .main {
-      flex: 1;
-      padding-bottom: 3rem;
-    }
-
-    .hero {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    .hero__heading {
-      font-size: clamp(1.5rem, 4vw, 2.25rem);
-      font-weight: 700;
-      color: var(--color-text);
-      margin-bottom: 0.75rem;
-      letter-spacing: -0.025em;
-    }
-
-    .hero__subheading {
-      font-size: 1.0625rem;
-      color: var(--color-text-muted);
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    /* Video Card */
     .video-card {
-      background: var(--color-surface);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-lg);
+      width: 100%;
+      border-radius: 34px;
       overflow: hidden;
-      margin-bottom: 2rem;
+      background: #000;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     }
 
     .video-wrapper {
       position: relative;
       width: 100%;
-      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      aspect-ratio: 16 / 9;
       background: #000;
     }
 
-    .video-wrapper .video-js {
-      position: absolute;
-      top: 0;
-      left: 0;
+    video {
       width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .plyr {
+      width: 100%;
+      height: 100%;
+      border-radius: 34px;
+      overflow: hidden;
+    }
+
+    .plyr__video-wrapper {
       height: 100%;
     }
 
-    /* Video.js Customizations */
-    .video-js .vjs-big-play-button {
-      display: none;
-    }
-
-    .video-js .vjs-control-bar {
-      background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
-      height: 3.5rem;
-      padding: 0 0.5rem;
-    }
-
-    .video-js .vjs-play-progress,
-    .video-js .vjs-volume-level {
-      background: var(--color-accent);
-    }
-
-    .video-js .vjs-slider {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Custom Play Overlay */
-    .play-overlay {
+    .live-badge {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.5);
-      cursor: pointer;
-      z-index: 10;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-
-    .play-overlay.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .play-overlay__button {
-      width: 5rem;
-      height: 5rem;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .play-overlay:hover .play-overlay__button {
-      transform: scale(1.1);
-      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
-    }
-
-    .play-overlay__button svg {
-      width: 2rem;
-      height: 2rem;
-      margin-left: 0.25rem;
-      fill: var(--color-text);
-    }
-
-    .play-overlay__text {
+      top: 28px;
+      left: 28px;
+      z-index: 5;
+      background: #001e8a;
       color: white;
-      font-size: 0.9375rem;
-      font-weight: 500;
-      margin-top: 1rem;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      font-size: 32px;
+      font-weight: 800;
+      padding: 4px 12px;
+      line-height: 1;
+      border-radius: 2px;
+      letter-spacing: 1px;
     }
 
-    /* Status Section */
-    .status {
-      text-align: center;
-      padding: 1.5rem;
-      background: var(--color-surface);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .status__icon {
-      width: 2.5rem;
-      height: 2.5rem;
-      margin: 0 auto 0.75rem;
-      color: var(--color-accent);
-    }
-
-    .status__title {
-      font-size: 1.125rem;
-      font-weight: 600;
-      margin-bottom: 0.375rem;
-    }
-
-    .status__message {
-      color: var(--color-text-muted);
-      font-size: 0.9375rem;
-    }
-
-    /* Footer */
-    .footer {
-      padding: 1.5rem 0;
-      text-align: center;
-      border-top: 1px solid rgba(0, 0, 0, 0.06);
-      background: var(--color-surface);
-    }
-
-    .footer__text {
-      font-size: 0.875rem;
-      color: var(--color-text-muted);
-    }
-
-    .footer__link {
-      color: var(--color-accent);
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s ease;
-    }
-
-    .footer__link:hover {
-      color: var(--color-accent-hover);
-      text-decoration: underline;
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       .header {
-        padding: 1.5rem 0;
+        padding: 18px 0 40px;
       }
 
-      .header__title {
-        font-size: 1.5rem;
+      .logo {
+        height: 44px;
       }
 
-      .video-card {
-        border-radius: var(--radius-md);
-        margin-left: -0.5rem;
-        margin-right: -0.5rem;
+      .container {
+        padding: 0 12px;
       }
 
-      .play-overlay__button {
-        width: 4rem;
-        height: 4rem;
+      .video-card,
+      .plyr {
+        border-radius: 18px;
       }
 
-      .play-overlay__button svg {
-        width: 1.5rem;
-        height: 1.5rem;
+      .live-badge {
+        top: 14px;
+        left: 14px;
+        font-size: 18px;
       }
-
-      .play-overlay__text {
-        font-size: 0.875rem;
-      }
-
-      .status {
-        padding: 1.25rem;
-      }
-    }
-
-    /* Reduced Motion */
-    @media (prefers-reduced-motion: reduce) {
-      .live-badge__dot {
-        animation: none;
-      }
-
-      .play-overlay,
-      .play-overlay__button {
-        transition: none;
-      }
-    }
-
-    /* Error State */
-    .video-error {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #1a1a2e;
-      color: white;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .video-error.hidden {
-      display: none;
-    }
-
-    .video-error__icon {
-      width: 3rem;
-      height: 3rem;
-      margin-bottom: 1rem;
-      opacity: 0.7;
-    }
-
-    .video-error__title {
-      font-size: 1.125rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-
-    .video-error__message {
-      font-size: 0.9375rem;
-      opacity: 0.8;
-      max-width: 300px;
     }
   </style>
 </head>
+
 <body>
-  <!-- Header -->
   <header class="header">
-    <div class="container">
-     <div class="header__logo">
-  <img src="https://lweurope.org/loveworld_europe_icon.svg" alt="Logo" class="header__logo-image">
-  </div>
-          </div>
+    <img
+      src="https://lweurope.org/loveworld_europe_icon.svg"
+      alt="Loveworld UK"
+      class="logo"
+    />
   </header>
 
-  <!-- Main Content -->
-  <main class="main">
-    <div class="container">
-      <!-- Hero Section -->
-      <!-- Video Player Card -->
-      <article class="video-card">
-        <div class="video-wrapper">
-          <video
-  id="live-player"
-  class="video-js vjs-fluid vjs-big-play-centered"
-  autoplay
-  muted
-  defaultMuted
-  controls
-  preload="auto"
-  playsinline
-  webkit-playsinline
-  poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 1080'%3E%3Crect fill='%231a1a2e' width='1920' height='1080'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff' font-family='system-ui, sans-serif' font-size='48' opacity='0.5'%3ELoading stream...%3C/text%3E%3C/svg%3E"
->
-                        <p class="vjs-no-js">
-              To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video.
-            </p>
-          </video>
+  <main class="container">
+    <section class="video-card">
+      <div class="video-wrapper">
+        <div class="live-badge">LIVE</div>
 
-          <!-- Custom Play Overlay (shown if autoplay fails) -->
-          <div id="play-overlay" class="play-overlay hidden" role="button" tabindex="0" aria-label="Tap to play video">
-            <div class="play-overlay__button">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
-            </div>
-            <span class="play-overlay__text">Tap to play</span>
-          </div>
-
-          <!-- Error State (hidden by default) -->
-          <div id="video-error" class="video-error hidden">
-            <svg class="video-error__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12" y2="12"/>
-              <line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
-            <h3 class="video-error__title">Stream Unavailable</h3>
-            <p class="video-error__message">We're experiencing technical difficulties. Please try again shortly.</p>
-          </div>
-        </div>
-      </article>
-
-      <!-- Status Section -->
-      
-    </div>
+        <video
+          id="player"
+          autoplay
+          muted
+          playsinline
+          webkit-playsinline
+          controls
+        ></video>
+      </div>
+    </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <p class="footer__text">
-        Need assistance? Contact us on 02075115830
-      </p>
-    </div>
-  </footer>
-
-  <!-- Video.js Library -->
-  <script src="https://vjs.zencdn.net/8.23.4/video.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 
   <script>
-(function() {
-  'use strict';
+    (function () {
+      const video = document.getElementById('player');
+      const source = 'https://cdn3.wowza.com/5/L1Uzd2FrbVlLRG1W/live/smil:lwukweb.smil/playlist.m3u8';
 
-  const videoElement = document.getElementById('live-player');
-  const playOverlay = document.getElementById('play-overlay');
-  const errorOverlay = document.getElementById('video-error');
+      video.muted = true;
+      video.defaultMuted = true;
+      video.autoplay = true;
+      video.playsInline = true;
 
-  videoElement.muted = true;
-  videoElement.defaultMuted = true;
-  videoElement.autoplay = true;
-  videoElement.playsInline = true;
+      video.setAttribute('muted', '');
+      video.setAttribute('autoplay', '');
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
 
-  videoElement.setAttribute('muted', '');
-  videoElement.setAttribute('defaultMuted', '');
-  videoElement.setAttribute('autoplay', '');
-  videoElement.setAttribute('playsinline', '');
-  videoElement.setAttribute('webkit-playsinline', '');
+      const player = new Plyr(video, {
+        controls: ['play', 'progress', 'mute', 'volume', 'fullscreen'],
+        autoplay: true,
+        muted: true
+      });
 
-  const player = videojs(videoElement, {
-    autoplay: 'muted',
-    muted: true,
-    liveui: true,
-    responsive: true,
-    fill: true,
-    playsinline: true,
-    errorDisplay: false,
-    html5: {
-      vhs: {
-        overrideNative: !videojs.browser.IS_SAFARI,
-        enableLowInitialPlaylist: true,
-        smoothQualityChange: true,
-        handleManifestRedirects: true
-      }
-    }
-  });
-
-  function showPlayOverlay() {
-    playOverlay.classList.remove('hidden');
-  }
-
-  function hidePlayOverlay() {
-    playOverlay.classList.add('hidden');
-  }
-
-  function showError() {
-    errorOverlay.classList.remove('hidden');
-    hidePlayOverlay();
-  }
-
-  function attemptAutoplay() {
-    player.muted(true);
-
-    const playPromise = player.play();
-
-    if (playPromise !== undefined) {
-      playPromise
-        .then(hidePlayOverlay)
-        .catch(function(error) {
-          console.log('Autoplay blocked:', error && error.message ? error.message : error);
-          showPlayOverlay();
+      function tryPlay() {
+        video.muted = true;
+        video.play().catch(() => {
+          console.log('Autoplay blocked; user interaction required.');
         });
-    }
-  }
+      }
 
-  function handleOverlayClick() {
-    hidePlayOverlay();
-    player.muted(true);
-    player.play().catch(showPlayOverlay);
-  }
+      if (Hls.isSupported()) {
+        const hls = new Hls({
+          enableWorker: true,
+          lowLatencyMode: false
+        });
 
-  playOverlay.addEventListener('click', handleOverlayClick);
-  playOverlay.addEventListener('touchstart', handleOverlayClick, { passive: true });
+        hls.loadSource(source);
+        hls.attachMedia(video);
 
-  playOverlay.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleOverlayClick();
-    }
-  });
-
-  player.ready(function() {
-     player.src({
-    src: 'https://cdn3.wowza.com/5/L1Uzd2FrbVlLRG1W/live/smil:lwukweb.smil/playlist.m3u8',
-    type: 'application/x-mpegURL'
-  });
-    attemptAutoplay();
-  });
-
-  player.on('loadedmetadata', attemptAutoplay);
-  player.on('canplay', attemptAutoplay);
-  player.on('playing', function() {
-    hidePlayOverlay();
-    errorOverlay.classList.add('hidden');
-  });
-
-  player.on('error', function() {
-    console.error('Video error:', player.error());
-    showError();
-  });
-})();
-</script>
+        hls.on(Hls.Events.MANIFEST_PARSED, tryPlay);
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = source;
+        video.addEventListener('loadedmetadata', tryPlay);
+      }
+    })();
+  </script>
 </body>
 </html>
