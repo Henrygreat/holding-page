@@ -14,6 +14,12 @@
       padding: 0;
     }
 
+    html,
+    body {
+      width: 100%;
+      overflow-x: hidden;
+    }
+
     body {
       background: #f8f9fa;
       font-family: Arial, sans-serif;
@@ -22,100 +28,103 @@
 
     .header {
       text-align: center;
-      padding: 20px 0 30px;
+      padding: 20px 0 24px;
     }
 
     .logo {
       height: 56px;
       width: auto;
+      max-width: 140px;
       object-fit: contain;
     }
 
     .container {
       width: 100%;
-      max-width: 1000px;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 16px;
     }
 
     .video-card {
       width: 100%;
-      border-radius: 34px;
-      max-width: 860px;
-      margin: 0 auto;
-      margin-top: 40px;
+      max-width: 760px;
+      margin: 20px auto 0;
+      border-radius: 28px;
       overflow: hidden;
       background: #000;
       box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     }
 
     .video-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 860px;   /* ⬅️ controls overall size */
-  margin: 0 auto;     /* center it */
-  aspect-ratio: 16 / 9;
-  background: #000;
-  border-radius: 28px;
-  overflow: hidden;
-}
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      overflow: hidden;
+    }
+
+    video,
+    .plyr,
+    .plyr__video-wrapper {
+      width: 100% !important;
+      height: 100% !important;
+    }
 
     video {
-      width: 100%;
-      height: 100%;
       display: block;
       object-fit: cover;
     }
 
     .plyr {
-      width: 100%;
-      height: 100%;
-      border-radius: 34px;
+      border-radius: 28px;
       overflow: hidden;
-    }
-
-    .plyr__video-wrapper {
-      height: 100%;
-    }
-
-    .live-badge {
-      position: absolute;
-      top: 28px;
-      left: 28px;
-      z-index: 5;
-      background: #001e8a;
-      color: white;
-      font-size: 32px;
-      font-weight: 800;
-      padding: 4px 12px;
-      line-height: 1;
-      border-radius: 2px;
-      letter-spacing: 1px;
     }
 
     @media (max-width: 768px) {
       .header {
-        padding: 18px 0 24px;
+        padding: 16px 0 18px;
       }
 
       .logo {
-        height: 44px;
+        height: 40px;
+        max-width: 120px;
       }
 
       .container {
-        padding: 0 12px;
+        max-width: 100%;
+        padding: 0 10px;
+      }
+
+      .video-card {
+        max-width: 100%;
+        margin-top: 10px;
+        border-radius: 16px;
+      }
+
+      .plyr {
+        border-radius: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 0 6px;
       }
 
       .video-card,
       .plyr {
-        border-radius: 18px;
+        border-radius: 12px;
       }
-    
+
+      .logo {
+        height: 36px;
+      }
     }
   </style>
 </head>
 
 <body>
+
   <header class="header">
     <img
       src="https://lweurope.org/loveworld_europe_icon.svg"
@@ -127,14 +136,16 @@
   <main class="container">
     <section class="video-card">
       <div class="video-wrapper">
-                <video
+
+        <video
           id="player"
-          autoplay
           muted
+          autoplay
           playsinline
           webkit-playsinline
           controls
         ></video>
+
       </div>
     </section>
   </main>
@@ -144,47 +155,68 @@
 
   <script>
     (function () {
+
+      const source =
+        'https://cdn3.wowza.com/5/L1Uzd2FrbVlLRG1W/live/smil:lwukweb.smil/playlist.m3u8';
+
       const video = document.getElementById('player');
-      const source = 'https://cdn3.wowza.com/5/L1Uzd2FrbVlLRG1W/live/smil:lwukweb.smil/playlist.m3u8';
 
       video.muted = true;
       video.defaultMuted = true;
       video.autoplay = true;
       video.playsInline = true;
 
-      video.setAttribute('muted', '');
-      video.setAttribute('autoplay', '');
-      video.setAttribute('playsinline', '');
-      video.setAttribute('webkit-playsinline', '');
-
       const player = new Plyr(video, {
-        controls: ['play', 'progress', 'mute', 'volume', 'fullscreen'],
         autoplay: true,
-        muted: true
+        muted: true,
+        controls: [
+          'play',
+          'progress',
+          'mute',
+          'volume',
+          'fullscreen'
+        ]
       });
 
       function tryPlay() {
         video.muted = true;
-        video.play().catch(() => {
-          console.log('Autoplay blocked; user interaction required.');
-        });
+
+        const promise = video.play();
+
+        if (promise !== undefined) {
+          promise.catch(function() {
+            console.log('Autoplay blocked.');
+          });
+        }
       }
 
       if (Hls.isSupported()) {
+
         const hls = new Hls({
-          enableWorker: true,
-          lowLatencyMode: false
+          enableWorker: true
         });
 
         hls.loadSource(source);
         hls.attachMedia(video);
 
-        hls.on(Hls.Events.MANIFEST_PARSED, tryPlay);
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+          tryPlay();
+        });
+
+      } else if (
+        video.canPlayType('application/vnd.apple.mpegurl')
+      ) {
+
         video.src = source;
-        video.addEventListener('loadedmetadata', tryPlay);
+
+        video.addEventListener(
+          'loadedmetadata',
+          tryPlay
+        );
       }
+
     })();
   </script>
+
 </body>
 </html>
